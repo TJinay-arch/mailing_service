@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Рассылка{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <div class="card shadow border-0">
+            <div class="card-body p-4">
+
+                <h4 class="mb-4 text-center">
+                    {% if form.instance.pk %}
+                    ✏ Редактирование рассылки
+                    {% else %}
+                    ➕ Создание рассылки
+                    {% endif %}
+                </h4>
+
+                <form method="post" id="mailingForm" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Сообщение -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Сообщение</label>
+                        {{ form.message }}
+                        <a href="{% url 'mailings:message_create' %}?next={{ request.path }}"
+                           class="btn btn-outline-success">
+                            ➕
+                        </a>
+                    </div>
+
+                    <!-- Даты -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Начало</label>
+                            {{ form.start_time }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Окончание</label>
+                            {{ form.end_time }}
+                        </div>
+                    </div>
+
+                    <!-- Статус периода -->
+                    <div class="mb-3">
+                        <div id="periodStatus" class="alert d-none"></div>
+                    </div>
+
+                    <!-- Получатели -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Получатели</label>
+                        {{ form.recipients }}
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'mailings:list' %}"
+                           class="btn btn-outline-secondary">
+                            ← Назад
+                        </a>
+
+                        <button type="submit"
+                                class="btn btn-success px-4">
+                            💾 Сохранить
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Select2
+    $('.select2').select2({
+        placeholder: "Выберите получателей",
+        width: '100%'
+    });
+
+    // Flatpickr
+    flatpickr(".datetimepicker", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        locale: "ru",
+        time_24hr: true
+    });
+
+    // Динамическая проверка периода
+    function checkPeriod() {
+        let start = new Date(document.getElementById("id_start_time").value);
+        let end = new Date(document.getElementById("id_end_time").value);
+        let now = new Date();
+        let statusBlock = document.getElementById("periodStatus");
+
+        if (!start || !end || isNaN(start) || isNaN(end)) {
+            statusBlock.classList.add("d-none");
+            return;
+        }
+
+        statusBlock.classList.remove("d-none");
+
+        if (start >= end) {
+            statusBlock.className = "alert alert-danger";
+            statusBlock.innerText = "❌ Дата начала должна быть раньше даты окончания.";
+        }
+        else if (now < start) {
+            statusBlock.className = "alert alert-secondary";
+            statusBlock.innerText = "🕒 Рассылка будет создана.";
+        }
+        else if (now >= start && now <= end) {
+            statusBlock.className = "alert alert-success";
+            statusBlock.innerText = "🚀 Рассылка активна.";
+        }
+        else {
+            statusBlock.className = "alert alert-dark";
+            statusBlock.innerText = "✔ Период рассылки завершён.";
+        }
+    }
+
+    document.getElementById("id_start_time").addEventListener("change", checkPeriod);
+    document.getElementById("id_end_time").addEventListener("change", checkPeriod);
+
+    checkPeriod();
+</script>
+
+{% endblock %}

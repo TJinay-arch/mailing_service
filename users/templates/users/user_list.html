@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Пользователи{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Пользователи сервиса</h2>
+
+<table class="table table-hover shadow-sm bg-white">
+
+    <thead class="table-light">
+
+    <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>Username</th>
+        <th>Статус</th>
+        <th></th>
+    </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for user in object_list %}
+
+    <tr>
+
+        <td>#{{ user.id }}</td>
+
+        <td>{{ user.email }}</td>
+
+        <td>{{ user.username }}</td>
+
+        <td>
+
+            {% if user.is_active %}
+            <span class="badge bg-success">Активен</span>
+            {% else %}
+            <span class="badge bg-danger">Заблокирован</span>
+            {% endif %}
+
+        </td>
+
+        <td>
+
+            {% if user.is_active and user != request.user %}
+
+            <form method="post"
+                  action="{% url 'users:block_user' user.id %}"
+                  style="display:inline">
+
+                {% csrf_token %}
+
+                <button class="btn btn-sm btn-danger">
+                    ⛔ Заблокировать
+                </button>
+
+            </form>
+
+            {% endif %}
+
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

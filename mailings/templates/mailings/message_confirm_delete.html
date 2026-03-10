@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card shadow p-4">
+    <h4>Удалить сообщение?</h4>
+    <p><strong>{{ object.subject }}</strong></p>
+
+    <form method="post">
+        {% csrf_token %}
+        <a href="{% url 'mailings:message_list' %}"
+           class="btn btn-secondary">Отмена</a>
+        <button type="submit"
+                class="btn btn-danger">Удалить
+        </button>
+    </form>
+</div>
+{% endblock %}

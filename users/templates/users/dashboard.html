@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Панель менеджера{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">Панель менеджера</h2>
+
+    <div class="row g-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-3">
+
+                <h5>Пользователи</h5>
+
+                <h2>{{ users_count }}</h2>
+
+                <a href="{% url 'users:user_list' %}"
+                   class="btn btn-sm btn-outline-primary mt-2">
+
+                    Посмотреть
+
+                </a>
+
+            </div>
+        </div>
+
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-3">
+
+                <h5>Активные рассылки</h5>
+
+                <h2>{{ active_mailings }}</h2>
+
+                <a href="{% url 'mailings:list' %}"
+                   class="btn btn-sm btn-outline-primary mt-2">
+
+                    К рассылкам
+
+                </a>
+
+            </div>
+        </div>
+
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-3">
+
+                <h5>Отправленные письма</h5>
+
+                <h2>{{ sent_emails }}</h2>
+
+            </div>
+        </div>
+
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-3">
+
+                <h5>Ошибки отправки</h5>
+
+                <h2 class="text-danger">{{ failed_emails }}</h2>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}
+Рассылка #{{ object.id }}
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- Основная информация -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <h4 class="mb-3">Рассылка #{{ object.id }}</h4>
+
+            <p><strong>Тема:</strong> {{ object.message.subject }}</p>
+            <p><strong>Статус:</strong> {{ object.get_status_display }}</p>
+
+            <p>
+                <strong>Период:</strong>
+                {{ object.start_time|date:"d.m.Y H:i" }} —
+                {{ object.end_time|date:"d.m.Y H:i" }}
+            </p>
+
+            <hr>
+
+            <h5>Получатели ({{ object.recipients.count }})</h5>
+
+            <ul class="list-group mb-3">
+                {% for recipient in object.recipients.all %}
+                <li class="list-group-item">
+                    {{ recipient.full_name }} — {{ recipient.email }}
+                </li>
+                {% empty %}
+                <li class="list-group-item text-muted">
+                    Нет получателей
+                </li>
+                {% endfor %}
+            </ul>
+
+            <div class="d-flex gap-2 flex-wrap">
+
+                <a href="{% url 'mailings:start' object.pk %}"
+                   class="btn btn-success">
+                    🚀 Запустить рассылку
+                </a>
+
+                <a href="{% url 'mailings:list' %}"
+                   class="btn btn-secondary">
+                    Назад
+                </a>
+
+                <a href="{% url 'mailings:mailing_delete' object.pk %}"
+                   class="btn btn-outline-danger">
+                    Удалить
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Статистика -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <h4 class="mb-4">📊 Статистика рассылки</h4>
+
+            <div class="row text-center">
+
+                <div class="col-md-3 mb-3">
+                    <h6>Всего попыток</h6>
+                    <p class="fs-4">{{ object.total_attempts }}</p>
+                </div>
+
+                <div class="col-md-3 mb-3 text-success">
+                    <h6>Успешно</h6>
+                    <p class="fs-4">{{ object.successful_attempts }}</p>
+                </div>
+
+                <div class="col-md-3 mb-3 text-danger">
+                    <h6>Ошибки</h6>
+                    <p class="fs-4">{{ object.failed_attempts }}</p>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <h6>Процент успеха</h6>
+                    <p class="fs-4">{{ object.success_rate }}%</p>
+                </div>
+
+            </div>
+
+            <!-- Progress bar -->
+            <div class="progress mt-3" style="height: 25px;">
+                <div class="progress-bar bg-success"
+                     role="progressbar"
+                     style="width: {{ object.success_rate }}%;"
+                     aria-valuenow="{{ object.success_rate }}"
+                     aria-valuemin="0"
+                     aria-valuemax="100">
+                    {{ object.success_rate }}%
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- История попыток -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h4 class="mb-3">📨 История попыток отправки</h4>
+
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Получатель</th>
+                    <th>Статус</th>
+                    <th>Ответ сервера</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for attempt in object.attempts.all %}
+                <tr>
+                    <td>
+                        {{ attempt.attempt_time|date:"d.m.Y H:i:s" }}
+                    </td>
+
+                    <td>
+                        {{ attempt.recipient.email }}
+                    </td>
+
+                    <td>
+                        {% if attempt.status == "success" %}
+                        <span class="badge bg-success">
+                                    {{ attempt.get_status_display }}
+                                </span>
+                        {% else %}
+                        <span class="badge bg-danger">
+                                    {{ attempt.get_status_display }}
+                                </span>
+                        {% endif %}
+                    </td>
+
+                    <td style="max-width:300px; word-break: break-word;">
+                        {{ attempt.server_response }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted">
+                        Попыток отправки пока нет
+                    </td>
+                </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

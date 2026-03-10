@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+
+        <div class="col-md-5">
+
+            <div class="card shadow-lg border-0 rounded-4 fade-in-card">
+
+                <div class="card-body p-5">
+
+                    <div class="text-center mb-4">
+                        <h3 class="fw-bold">Создать аккаунт</h3>
+                        <p class="text-muted">
+                            Заполните данные для регистрации
+                        </p>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            {{ form.email }}
+                            {{ form.email.errors }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Имя пользователя</label>
+                            {{ form.username }}
+                            {{ form.username.errors }}
+                        </div>
+
+                        <!-- PASSWORD 1 -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">Пароль</label>
+
+                            <div class="input-group">
+
+                                {{ form.password1 }}
+
+                                <button class="btn btn-outline-secondary toggle-password" type="button">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+
+                            </div>
+
+                            <!-- Индикатор сложности -->
+
+                            <div class="progress mt-2" style="height:6px;">
+                                <div id="strengthLevel" class="progress-bar"></div>
+                            </div>
+
+                            {{ form.password1.errors }}
+
+                        </div>
+
+                        <!-- PASSWORD 2 -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">Повторите пароль</label>
+
+                            <div class="input-group">
+
+                                {{ form.password2 }}
+
+                                <button class="btn btn-outline-secondary toggle-password" type="button">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+
+                            </div>
+
+                            <!-- Проверка совпадения -->
+
+                            <div id="passwordMatch" class="small mt-2"></div>
+
+                            {{ form.password2.errors }}
+
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Страна</label>
+                            {{ form.country }}
+                            {{ form.country.errors }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Аватар</label>
+                            {{ form.avatar }}
+                            {{ form.avatar.errors }}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 rounded-3">
+                            Зарегистрироваться
+                        </button>
+
+                    </form>
+
+                    <hr>
+
+                    <div class="text-center">
+<span class="text-muted">
+Уже есть аккаунт?
+</span>
+
+                        <a href="{% url 'users:login' %}" class="text-decoration-none fw-semibold">
+                            Войти
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+
+    /* --------------------
+       👁 ПОКАЗАТЬ ПАРОЛЬ
+    --------------------- */
+
+    document.querySelectorAll(".toggle-password").forEach(button => {
+
+    button.addEventListener("click", function(){
+
+    const input = this.parentElement.querySelector("input");
+    const icon = this.querySelector("i");
+
+    if(input.type === "password"){
+
+    input.type = "text";
+    icon.classList.remove("bi-eye");
+    icon.classList.add("bi-eye-slash");
+
+    }else{
+
+    input.type = "password";
+    icon.classList.remove("bi-eye-slash");
+    icon.classList.add("bi-eye");
+
+    }
+
+    });
+
+    });
+
+
+    /* --------------------
+       🔒 СИЛА ПАРОЛЯ
+    --------------------- */
+
+    const passwordInput = document.getElementById("id_password1");
+    const confirmInput = document.getElementById("id_password2");
+    const strengthBar = document.getElementById("strengthLevel");
+
+    passwordInput.addEventListener("input", function(){
+
+    const value = passwordInput.value;
+
+    let strength = 0;
+
+    if(value.length >= 8) strength++;
+    if(/[A-Z]/.test(value)) strength++;
+    if(/[0-9]/.test(value)) strength++;
+    if(/[^A-Za-z0-9]/.test(value)) strength++;
+
+    const percent = strength * 25;
+
+    strengthBar.style.width = percent + "%";
+
+    if(percent <= 25){
+    strengthBar.className = "progress-bar bg-danger";
+    }
+    else if(percent <= 50){
+    strengthBar.className = "progress-bar bg-warning";
+    }
+    else if(percent <= 75){
+    strengthBar.className = "progress-bar bg-info";
+    }
+    else{
+    strengthBar.className = "progress-bar bg-success";
+    }
+
+    });
+
+
+    /* --------------------
+       ⚡ СОВПАДЕНИЕ ПАРОЛЕЙ
+    --------------------- */
+
+    const matchText = document.getElementById("passwordMatch");
+
+    function checkPasswords(){
+
+    if(confirmInput.value === ""){
+    matchText.textContent = "";
+    return;
+    }
+
+    if(passwordInput.value === confirmInput.value){
+
+    matchText.innerHTML =
+    '<i class="bi bi-check-circle text-success"></i> Пароли совпадают';
+
+    matchText.className = "small mt-2 text-success";
+
+    }else{
+
+    matchText.innerHTML =
+    '<i class="bi bi-x-circle text-danger"></i> Пароли не совпадают';
+
+    matchText.className = "small mt-2 text-danger";
+
+    }
+
+    }
+
+    passwordInput.addEventListener("input", checkPasswords);
+    confirmInput.addEventListener("input", checkPasswords);
+
+    });
+
+</script>
+
+{% endblock %}

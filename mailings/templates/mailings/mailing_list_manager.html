@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">Рассылки</h2>
+
+    <table class="table table-bordered">
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Статус</th>
+            <th>Начало</th>
+            <th>Конец</th>
+            <th>Владелец</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        {% for mailing in object_list %}
+
+        <tr>
+
+            <td>{{ mailing.id }}</td>
+            <td>{{ mailing.get_status_display }}</td>
+            <td>{{ mailing.start_time }}</td>
+            <td>{{ mailing.end_time }}</td>
+            <td>{{ mailing.owner }}</td>
+
+            <td>
+
+                {% if request.user.groups.first.name == "manager" %}
+
+                <a href="{% url 'mailings:disable' mailing.id %}"
+                   class="btn btn-danger btn-sm">
+                    Отключить
+                </a>
+
+                {% endif %}
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}
