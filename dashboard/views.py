@@ -1,10 +1,10 @@
-from django.utils import timezone
+from django.core.cache import cache
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.generic import TemplateView
-from django.core.cache import cache
+
 from clients.models import Recipient
-from mailings.models import Mailing, Message
+from mailings.models import Mailing
 from users.services import is_manager
 
 
@@ -44,6 +44,8 @@ class DashboardView(TemplateView):
         context.update(data)
 
         return context
+
+
 @method_decorator(
     cache_control(public=True, max_age=3600),
     name="dispatch",

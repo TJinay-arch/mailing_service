@@ -1,7 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -13,7 +12,7 @@ from users.mixins import OwnerCreateMixin, OwnerQuerysetMixin
 from users.services import is_manager
 
 from .forms import MailingForm, MessageForm
-from .models import Mailing, Message, MailingAttempt
+from .models import Mailing, MailingAttempt, Message
 from .services import MailingSenderService
 
 
@@ -238,6 +237,7 @@ def disable_mailing(request, mailing_id):
 
     return redirect("mailings:list")
 
+
 class AttemptListView(ListView):
 
     model = MailingAttempt
@@ -248,6 +248,4 @@ class AttemptListView(ListView):
 
         qs = super().get_queryset()
 
-        return qs.filter(
-            mailing__owner=self.request.user
-        )
+        return qs.filter(mailing__owner=self.request.user)

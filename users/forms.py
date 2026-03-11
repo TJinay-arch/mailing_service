@@ -1,8 +1,9 @@
+from django import forms
 from django.contrib.auth.forms import (AuthenticationForm, PasswordResetForm,
                                        SetPasswordForm, UserCreationForm)
 
 from .models import User
-from django import forms
+
 
 class UserRegisterForm(UserCreationForm):
     class Meta:
@@ -25,8 +26,6 @@ class UserRegisterForm(UserCreationForm):
         self.fields["country"].widget.attrs.update({"class": "form-control", "placeholder": "Укажите страну"})
 
         self.fields["avatar"].widget.attrs.update({"class": "form-control"})
-
-
 
     def clean_avatar(self):
         avatar = self.cleaned_data.get("avatar")
