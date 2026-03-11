@@ -13,7 +13,7 @@ from users.mixins import OwnerCreateMixin, OwnerQuerysetMixin
 from users.services import is_manager
 
 from .forms import MailingForm, MessageForm
-from .models import Mailing, Message
+from .models import Mailing, Message, MailingAttempt
 from .services import MailingSenderService
 
 
@@ -22,21 +22,12 @@ class MailingListView(OwnerQuerysetMixin, ListView):
     template_name = "mailings/mailing_list.html"
 
     def get_queryset(self):
-        user = self.request.user
-        cache_key = f"mailings_list_{user.id}"
+        qs = super().get_queryset()
 
-        mailings = cache.get(cache_key)
+        if self.request.user.groups.filter(name="manager").exists():
+            return qs
 
-        if not mailings:
-
-            if is_manager(self.request.user):
-                mailings = Mailing.objects.all()
-            else:
-                mailings = Mailing.objects.filter(owner=user)
-
-            cache.set(cache_key, mailings, 60)
-
-        return mailings
+        return qs.filter(owner=self.request.user)
 
 
 class MailingDetailView(LoginRequiredMixin, OwnerQuerysetMixin, DetailView):
@@ -246,3 +237,17 @@ def disable_mailing(request, mailing_id):
         mailing.save()
 
     return redirect("mailings:list")
+
+class AttemptListView(ListView):
+
+    model = MailingAttempt
+
+    template_name = "mailings/attempt_list.html"
+
+    def get_queryset(self):
+
+        qs = super().get_queryset()
+
+        return qs.filter(
+            mailing__owner=self.request.user
+        )

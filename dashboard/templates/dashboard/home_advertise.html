@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Mailing Service{% endblock %}
+
+{% block content %}
+
+<div class="text-center py-5">
+
+    <h1 class="display-4 fw-bold">Email-рассылки для вашего бизнеса</h1>
+
+    <p class="lead mt-3">
+        Управляйте получателями, создавайте сообщения и запускайте
+        автоматические рассылки через удобный интерфейс.
+    </p>
+
+    <div class="mt-4">
+
+        <a href="{% url 'users:register' %}" class="btn btn-primary btn-lg me-3">
+            Начать бесплатно
+        </a>
+
+        <a href="{% url 'users:login' %}" class="btn btn-outline-secondary btn-lg">
+            Войти
+        </a>
+
+    </div>
+
+</div>
+
+<hr class="my-5">
+
+<div class="row text-center">
+
+    <div class="col-md-4">
+        <h4>📧 Управление рассылками</h4>
+        <p>Создавайте и запускайте email-рассылки в несколько кликов.</p>
+    </div>
+
+    <div class="col-md-4">
+        <h4>👥 Управление получателями</h4>
+        <p>Храните базу клиентов и управляйте контактами.</p>
+    </div>
+
+    <div class="col-md-4">
+        <h4>📊 Статистика отправки</h4>
+        <p>Отслеживайте успешные и неудачные попытки отправки писем.</p>
+    </div>
+
+</div>
+
+{% endblock %}

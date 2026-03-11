@@ -18,16 +18,26 @@ class RecipientListView(OwnerQuerysetMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
+
         user = self.request.user
-        cache_key = f"recipients_{user.id}"
+        page = self.request.GET.get("page", 1)
+
+        # уникальный ключ кеша
+        cache_key = f"recipients_{user.id}_{page}"
 
         recipients = cache.get(cache_key)
-        if not recipients:
-            if is_manager(self.request.user):
-                recipients = Recipient.objects.all()
+
+        if recipients is None:
+
+            qs = super().get_queryset()
+
+            if user.groups.filter(name="manager").exists():
+                recipients = qs
             else:
-                recipients = Recipient.objects.filter(owner=self.request.user)
-            cache.set(cache_key, recipients, 120)
+                recipients = qs.filter(owner=user)
+
+            cache.set(cache_key, recipients, 60)
+
         return recipients
 
 
