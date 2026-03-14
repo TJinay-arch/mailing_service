@@ -25,3 +25,6 @@ class Recipient(models.Model):
         verbose_name_plural = "Получатели"
 
         constraints = [models.UniqueConstraint(fields=["owner", "email"], name="unique_recipient_per_user")]
+        permissions = [
+            ("can_disable_recipient", "Can disable recipient"),
+        ]

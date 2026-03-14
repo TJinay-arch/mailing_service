@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
@@ -8,11 +9,11 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.html import strip_tags
 from django.views.decorators.http import require_POST
-from django.views.generic import CreateView, ListView, TemplateView, View
+from django.views.generic import CreateView, ListView, TemplateView, View, DetailView, UpdateView
 
 from mailings.models import Mailing, MailingAttempt
 
-from .forms import UserLoginForm, UserRegisterForm
+from .forms import UserLoginForm, UserRegisterForm, UpdateProfileForm
 from .models import User
 from .services import is_manager
 
@@ -79,7 +80,6 @@ class UserListView(ListView):
 @login_required
 @require_POST
 def block_user(request, user_id):
-
     if not is_manager(request.user):
         raise PermissionDenied
 
@@ -93,18 +93,15 @@ def block_user(request, user_id):
 
 
 class ManagerDashboardView(TemplateView):
-
     template_name = "users/dashboard.html"
 
     def dispatch(self, request, *args, **kwargs):
-
         if not is_manager(request.user):
             raise PermissionDenied
 
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
 
         context["users_count"] = User.objects.count()
@@ -116,3 +113,22 @@ class ManagerDashboardView(TemplateView):
         context["failed_emails"] = MailingAttempt.objects.filter(status=MailingAttempt.AttemptStatus.FAILED).count()
 
         return context
+
+
+class ProfileView(LoginRequiredMixin, DetailView):
+    model = User
+    template_name = "users/profile.html"
+
+    def get_object(self):
+        return self.request.user
+
+
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = UpdateProfileForm
+    template_name = "users/profile_form.html"
+
+    success_url = reverse_lazy("users:profile")
+
+    def get_object(self):
+        return self.request.user
