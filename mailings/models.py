@@ -19,6 +19,9 @@ class Message(models.Model):
     class Meta:
         verbose_name = "Сообщение"
         verbose_name_plural = "Сообщения"
+        permissions = [
+            ("can_disable_message", "Can disable message"),
+        ]
 
 
 class Mailing(models.Model):

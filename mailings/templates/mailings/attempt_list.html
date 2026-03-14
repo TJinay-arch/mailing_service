@@ -42,11 +42,11 @@
             </td>
 
             <td>
-                {{ attempt.response|default:"—" }}
+                {{ attempt.server_response|default:"—" }}
             </td>
 
             <td>
-                {{ attempt.created_at|date:"d.m.Y H:i" }}
+                {{ attempt.attempt_time|date:"d.m.Y H:i" }}
             </td>
 
         </tr>

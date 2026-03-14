@@ -3,8 +3,8 @@ from django.urls import path, reverse_lazy
 
 from .forms import StyledPasswordResetForm, StyledSetPasswordForm
 from .views import (ConfirmEmailView, CustomLoginView, CustomLogoutView,
-                    ManagerDashboardView, RegisterView, UserListView,
-                    block_user)
+                    ManagerDashboardView, ProfileUpdateView, ProfileView,
+                    RegisterView, UserListView, block_user)
 
 app_name = "users"
 
@@ -50,4 +50,6 @@ urlpatterns = [
         ManagerDashboardView.as_view(),
         name="dashboard",
     ),
+    path("profile/", ProfileView.as_view(), name="profile"),
+    path("profile/edit/", ProfileUpdateView.as_view(), name="profile_edit"),
 ]

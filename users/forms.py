@@ -59,3 +59,14 @@ class StyledSetPasswordForm(SetPasswordForm):
 
         for field in self.fields.values():
             field.widget.attrs["class"] = "form-control"
+
+
+class UpdateProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["email", "phone", "avatar"]
+        widgets = {
+            "email": forms.TextInput(attrs={"class": "form-control"}),
+            "phone": forms.TextInput(attrs={"class": "form-control"}),
+            "avatar": forms.FileInput(attrs={"class": "form-control"}),
+        }

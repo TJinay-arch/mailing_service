@@ -147,8 +147,10 @@ activemq-data/
 # SageMath parsed files
 *.sage.py
 
-# Environments
+# Environment variables
 .env
+.env.*
+!.env.sample
 .envrc
 .venv
 env/

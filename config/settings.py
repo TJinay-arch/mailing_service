@@ -139,18 +139,19 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 PASSWORD_FOR_MAIL = os.getenv("PASSWORD_FOR_MAIL")
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.mail.ru"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "ilya-payusov@mail.ru"
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
 EMAIL_HOST_PASSWORD = PASSWORD_FOR_MAIL
-DEFAULT_FROM_EMAIL = "ilya-payusov@mail.ru"
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
+REDIS_URL = os.getenv("REDIS_URL")
 CACHE_ENABLED = True
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": REDIS_URL,
     }
 }
 

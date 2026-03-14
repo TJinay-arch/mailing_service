@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.db.models import Count, Q
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
@@ -132,7 +134,8 @@ def start_mailing(request, pk):
     if mailing.status == Mailing.Status.FINISHED:
         messages.error(request, "Рассылка уже завершена.")
         return redirect("mailings:list")
-
+    if mailing.owner != request.user:
+        return HttpResponseForbidden()
     try:
         # 1️⃣ Переводим в ACTIVE
         mailing.status = Mailing.Status.ACTIVE
@@ -239,13 +242,31 @@ def disable_mailing(request, mailing_id):
 
 
 class AttemptListView(ListView):
-
     model = MailingAttempt
 
     template_name = "mailings/attempt_list.html"
 
     def get_queryset(self):
-
         qs = super().get_queryset()
 
         return qs.filter(mailing__owner=self.request.user)
+
+
+class MailingReportView(LoginRequiredMixin, ListView):
+
+    model = Mailing
+    template_name = "mailings/report.html"
+    context_object_name = "mailings"
+
+    def get_queryset(self):
+        return Mailing.objects.filter(owner=self.request.user).annotate(
+            attempts_count=Count("attempts"),
+            success_count=Count(
+                "attempts",
+                filter=Q(attempts__status="success"),
+            ),
+            failed_count=Count(
+                "attempts",
+                filter=Q(attempts__status="failed"),
+            ),
+        )

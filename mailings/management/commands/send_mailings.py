@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from mailings.models import Mailing
-from mailings.services import send_mail
+from mailings.services import MailingSenderService
 
 
 class Command(BaseCommand):
@@ -20,6 +20,6 @@ class Command(BaseCommand):
 
         for mailing in mailings:
 
-            send_mail(mailing)
+            MailingSenderService.send_mail(mailing)
 
         self.stdout.write("Рассылки отправлены")

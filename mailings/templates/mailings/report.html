@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">Отчет по рассылкам</h2>
+
+    {% if mailings %}
+
+    <div class="row">
+
+        {% for mailing in mailings %}
+
+        <div class="col-md-6 mb-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <h5 class="card-title">
+                        Рассылка #{{ mailing.id }}
+                    </h5>
+
+                    <p class="text-muted">
+                        {{ mailing.message.subject }}
+                    </p>
+
+                    <hr>
+
+                    <p>
+                        Получателей:
+                        <strong>{{ mailing.recipients.count }}</strong>
+                    </p>
+
+                    <p>
+                        Всего попыток:
+                        <strong>{{ mailing.attempts_count }}</strong>
+                    </p>
+
+                    <p>
+                        Успешно:
+                        <span class="badge bg-success">
+{{ mailing.success_count }}
+</span>
+                    </p>
+
+                    <p>
+                        Ошибки:
+                        <span class="badge bg-danger">
+{{ mailing.failed_count }}
+</span>
+                    </p>
+
+                    <hr>
+
+                    <a href="{% url 'mailings:detail' mailing.pk %}"
+                       class="btn btn-outline-primary btn-sm">
+
+                        Открыть рассылку
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="alert alert-info">
+        У вас пока нет рассылок
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
