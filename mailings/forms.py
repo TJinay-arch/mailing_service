@@ -41,5 +41,3 @@ class MessageForm(forms.ModelForm):
             "subject": forms.TextInput(attrs={"class": "form-control"}),
             "body": forms.Textarea(attrs={"class": "form-control", "rows": 6}),
         }
-
-

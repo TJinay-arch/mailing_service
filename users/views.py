@@ -9,11 +9,12 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.html import strip_tags
 from django.views.decorators.http import require_POST
-from django.views.generic import CreateView, ListView, TemplateView, View, DetailView, UpdateView
+from django.views.generic import (CreateView, DetailView, ListView,
+                                  TemplateView, UpdateView, View)
 
 from mailings.models import Mailing, MailingAttempt
 
-from .forms import UserLoginForm, UserRegisterForm, UpdateProfileForm
+from .forms import UpdateProfileForm, UserLoginForm, UserRegisterForm
 from .models import User
 from .services import is_manager
 

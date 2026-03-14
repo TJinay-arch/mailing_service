@@ -3,12 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Q
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView)
-from django.http import HttpResponseForbidden
 
 from users.mixins import OwnerCreateMixin, OwnerQuerysetMixin
 from users.services import is_manager
@@ -259,17 +259,14 @@ class MailingReportView(LoginRequiredMixin, ListView):
     context_object_name = "mailings"
 
     def get_queryset(self):
-        return (
-            Mailing.objects.filter(owner=self.request.user)
-            .annotate(
-                attempts_count=Count("attempts"),
-                success_count=Count(
-                    "attempts",
-                    filter=Q(attempts__status="success"),
-                ),
-                failed_count=Count(
-                    "attempts",
-                    filter=Q(attempts__status="failed"),
-                ),
-            )
+        return Mailing.objects.filter(owner=self.request.user).annotate(
+            attempts_count=Count("attempts"),
+            success_count=Count(
+                "attempts",
+                filter=Q(attempts__status="success"),
+            ),
+            failed_count=Count(
+                "attempts",
+                filter=Q(attempts__status="failed"),
+            ),
         )

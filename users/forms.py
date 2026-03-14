@@ -60,6 +60,7 @@ class StyledSetPasswordForm(SetPasswordForm):
         for field in self.fields.values():
             field.widget.attrs["class"] = "form-control"
 
+
 class UpdateProfileForm(forms.ModelForm):
     class Meta:
         model = User
